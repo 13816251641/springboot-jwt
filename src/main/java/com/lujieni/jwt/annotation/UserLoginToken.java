@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})//可用在方法名上
+@Retention(RetentionPolicy.RUNTIME)//运行时有效
 public @interface UserLoginToken {
     boolean required() default true;
 }

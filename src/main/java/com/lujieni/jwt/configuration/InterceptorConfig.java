@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authenticationInterceptor())
+        registry.addInterceptor(authenticationInterceptor()) //使用注入的bean
                 .addPathPatterns("/**");
     }
     @Bean

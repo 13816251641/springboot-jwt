@@ -62,14 +62,12 @@ public class MyJwtTest {
     }
 
     /**
-     *
-     * 验证token的合法性,只有通过vertify我们才能
-     * 获取到claim中的值
+     * 验证token的合法性,只有通过vertify我们才能获取到claim中的值,
+     * 但audience&&issuer等参数我们却可以直接获取,见testGetValueDirectly
      */
     @Test
     public void verifyToken() {
         Algorithm algorithm = Algorithm.HMAC256("secret");
-        //如果待验证的token中设置了明确的issuer,构造verifier时也要设置对应的issuer才可以
         JWTVerifier verifier = JWT.require(algorithm).build();// Reusable verifier instance
         DecodedJWT jwt = verifier.verify(token);
 
