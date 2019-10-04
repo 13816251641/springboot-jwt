@@ -8,7 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.lujieni.jwt.annotation.PassToken;
 import com.lujieni.jwt.annotation.UserLoginToken;
 import com.lujieni.jwt.dao.UserRepository;
-import com.lujieni.jwt.entity.User;
+import com.lujieni.jwt.service.TokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 public class AuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TokenManager tokenManager;
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
         String token = httpServletRequest.getHeader("token");// 从 http 请求头中取出 token
@@ -40,28 +42,30 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (method.isAnnotationPresent(UserLoginToken.class)) {
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
-                // 执行认证
-                if (token == null) {
-                    throw new RuntimeException("无token，请重新登录");
+                if(!tokenManager.checkToken(token)){
+                    /* token校验失败 */
+                    throw new RuntimeException("token校验失败");
                 }
-                // 获取 token 中的 user id
-                String userId;
-                try {
-                    userId = JWT.decode(token).getAudience().get(0);
-                } catch (JWTDecodeException j) {
-                    throw new RuntimeException("401");
-                }
-                User user = userRepository.findById(Integer.parseInt(userId)).orElse(null);
-                if (user == null) {
-                    throw new RuntimeException("用户不存在，请重新登录");
-                }
-                // 验证 token
-                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getPassword())).build();
-                try {
-                    jwtVerifier.verify(token);
-                } catch (JWTVerificationException e) {
-                    throw new RuntimeException("401");
-                }
+              /*
+                    校验token的合法性,因为目前使用redis存储,所以不需要了
+                    String id;
+                    try {
+                        id = JWT.decode(token).getAudience().get(0);
+                    } catch (JWTDecodeException j) {
+                        throw new RuntimeException("401");
+                    }
+                    User user = userRepository.findById(Integer.parseInt(userId)).orElse(null);
+                    if (user == null) {
+                        throw new RuntimeException("用户不存在，请重新登录");
+                    }
+                    // 验证 token
+                    JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getPassword())).build();
+                    try {
+                        jwtVerifier.verify(token);
+                    } catch (JWTVerificationException e) {
+                        throw new RuntimeException("401");
+                    }
+                */
                 return true;
             }
         }

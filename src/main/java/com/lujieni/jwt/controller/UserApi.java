@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lujieni.jwt.annotation.UserLoginToken;
 import com.lujieni.jwt.dao.UserRepository;
 import com.lujieni.jwt.entity.User;
+import com.lujieni.jwt.service.TokenManager;
 import com.lujieni.jwt.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class UserApi {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    TokenService tokenService;
+    private TokenManager tokenManager;
     //登录
     @PostMapping("/login")
     public Object login(@RequestBody User user){
@@ -29,9 +30,8 @@ public class UserApi {
                 jsonObject.put("message","登录失败,密码错误");
                 return jsonObject;
             }else {
-                String token = tokenService.getToken(userForBase);
+                String token = tokenManager.createToken(userForBase);
                 jsonObject.put("token", token);
-                jsonObject.put("user", userForBase);
                 return jsonObject;
             }
         }
