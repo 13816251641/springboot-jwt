@@ -61,9 +61,12 @@ public class JwtDemo {
         return token;
     }
 
+    /**
+     * 生成携带自定义信息的JWT token
+     */
     @Test
     public void createTokenWithClaim() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("alg", "HS256");
         map.put("typ", "JWT");
 
@@ -110,13 +113,19 @@ public class JwtDemo {
                 .sign(algorithm);
     }
 
-
+    /**
+     * 验证token
+     * @throws UnsupportedEncodingException
+     */
     @Test
     public void verifyToken() throws UnsupportedEncodingException {
         String token = createTokenWithChineseClaim2();
 
         Algorithm algorithm = Algorithm.HMAC256("secret");
-        //如果待验证的token中设置了issuer,构造verifier时也要设置对应的issuer才可以
+        /*
+           如果待验证的token中设置了issuer,构造verifier时要么不设置
+           issuer的值,要么一定要和待验证的相匹配才行!!!
+         */
         JWTVerifier verifier = JWT.require(algorithm).withIssuer("service").build(); // Reusable verifier instance
         DecodedJWT jwt = verifier.verify(token);
 
@@ -142,7 +151,10 @@ public class JwtDemo {
             Claim claim = entry.getValue();
             System.out.println("key:" + key + " value:" + claim.asString());
         }
-        Claim claim = claims.get("loginName");
+
+        byte[] userByte = BaseEncoding.base64().decode(claims.get("user").asString());
+        User user = new Gson().fromJson(new String(userByte), User.class);
+        System.out.println(user);
     }
 
 

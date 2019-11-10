@@ -11,10 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringRunner.class)
@@ -31,6 +28,7 @@ public class MyJwtTest {
         map.put("alg", "HS256");//HS256 对称加密算法
         map.put("typ", "JWT");
 
+        /*构建密钥信息 */
         Algorithm algorithm = Algorithm.HMAC256("secret");
         token = JWT.create().withHeader(map)
                 .withSubject("测试token")//设置主题
@@ -68,7 +66,8 @@ public class MyJwtTest {
     @Test
     public void verifyToken() {
         Algorithm algorithm = Algorithm.HMAC256("secret");
-        JWTVerifier verifier = JWT.require(algorithm).build();// Reusable verifier instance
+        /* reusable verifier instance */
+        JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT jwt = verifier.verify(token);
 
         Map<String, Claim> claims = jwt.getClaims();

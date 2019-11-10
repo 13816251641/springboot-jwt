@@ -18,8 +18,12 @@ public class RedisTokenManagerImpl implements TokenManager {
     private RedisTemplate<Object,Object> redisTemplate;
     @Override
     public String createToken(User user){
+        /*REDIS_TOKEN_PREFIX_ID*/
         String key = JwtConstants.REDIS_TOKEN_PREFIX+user.getId();
-        String token= JWT.create().withAudience(user.getId().toString())//生成token
+        /*
+           使用用户id当做audience的值,使用用户的密码作秘钥
+         */
+        String token= JWT.create().withAudience(user.getId().toString())
                 .sign(Algorithm.HMAC256(user.getPassword()));
         redisTemplate.opsForValue().set(key,token,JwtConstants.TOKEN_EXPIRES_MINUTE, TimeUnit.MINUTES);//存入redis
         return token;
@@ -30,8 +34,8 @@ public class RedisTokenManagerImpl implements TokenManager {
         if (checkToken == null) {
             return false;
         }
-        String id = JWT.decode(checkToken).getAudience().get(0);
-        String key = JwtConstants.REDIS_TOKEN_PREFIX + id;
+        String userId = JWT.decode(checkToken).getAudience().get(0);
+        String key = JwtConstants.REDIS_TOKEN_PREFIX + userId;
         String token = (String)redisTemplate.opsForValue().get(key);
         if (token == null || !token.equals(checkToken)) {
             return false;
