@@ -10,6 +10,8 @@ import com.lujieni.jwt.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RequestMapping("api")
 @RestController
 public class UserApi {
@@ -20,13 +22,13 @@ public class UserApi {
     //登录
     @PostMapping("/login")
     public Object login(@RequestBody User user){
-        JSONObject jsonObject=new JSONObject();
-        User userForBase=userRepository.findByUsername(user.getUsername());
+        JSONObject jsonObject = new JSONObject();
+        User userForBase = userRepository.findByUsername(user.getUsername());
         if(userForBase==null){
             jsonObject.put("message","登录失败,用户不存在");
             return jsonObject;
         }else {
-            if (!userForBase.getPassword().equals(user.getPassword())){
+            if (!Objects.equals(userForBase.getPassword(),user.getPassword())){
                 jsonObject.put("message","登录失败,密码错误");
                 return jsonObject;
             }else {

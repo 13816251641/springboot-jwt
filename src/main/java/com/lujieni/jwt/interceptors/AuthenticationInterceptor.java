@@ -26,7 +26,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
         /* 从http请求头中取出 token */
         String token = httpServletRequest.getHeader("token");
-        // 如果不是映射到方法直接通过
+        // 如果不是映射到方法直接通过,猜测有些是访问静态资源
         if(!(object instanceof HandlerMethod)){
             return true;
         }
@@ -49,9 +49,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 }
               /*
                     校验token的合法性,因为目前使用redis存储,所以不需要了
-                    String id;
+                    String userId;
                     try {
-                        id = JWT.decode(token).getAudience().get(0);
+                        userId = JWT.decode(token).getAudience().get(0);
                     } catch (JWTDecodeException j) {
                         throw new RuntimeException("401");
                     }
@@ -66,8 +66,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     } catch (JWTVerificationException e) {
                         throw new RuntimeException("401");
                     }
-                */
-                return true;
+               */
+               return true;
             }
         }
         return true;
