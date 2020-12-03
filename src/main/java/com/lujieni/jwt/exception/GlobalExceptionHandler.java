@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public JSONObject handleException(Exception e){
         log.error("全局异常",e);
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         jsonObject.put("error",e.getMessage());
         return jsonObject;
     }

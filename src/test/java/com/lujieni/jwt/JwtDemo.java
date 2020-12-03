@@ -32,17 +32,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 public class JwtDemo {
 
-    private Logger log = LoggerFactory.getLogger(JwtDemo.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtDemo.class);
 
     /**
      * 生成不携带自定义信息的JWT token
      */
-    public String createToken() {
+    @Test
+    public void createToken() {
         String secret = "secret";// token 密钥
         Algorithm algorithm = Algorithm.HMAC256("secret");
 
         // 头部信息
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("alg", "HS256");
         map.put("typ", "JWT");
 
@@ -58,7 +59,7 @@ public class JwtDemo {
                 .withIssuedAt(nowDate) //设置 载荷 生成签名的时间
                 .withExpiresAt(expireDate)//设置 载荷 签名过期的时间
                 .sign(algorithm);//签名 Signature
-        return token;
+        System.out.println(token);
     }
 
     /**
@@ -86,8 +87,12 @@ public class JwtDemo {
                 .withExpiresAt(expireDate)//签名过期的时间
                 /*签名 Signature */
                 .sign(algorithm);
+        System.out.println(token);
     }
 
+    /**
+     * 生成携带中文自定义信息的JWT token
+     */
     @Test
     public void createTokenWithChineseClaim() {
         Date nowDate = new Date();
@@ -111,6 +116,7 @@ public class JwtDemo {
                 .withExpiresAt(expireDate)// 签名过期的时间
                 /* 签名 Signature */
                 .sign(algorithm);
+        System.out.println(token);
     }
 
     /**
@@ -123,10 +129,10 @@ public class JwtDemo {
 
         Algorithm algorithm = Algorithm.HMAC256("secret");
         /*
-           如果待验证的token中设置了issuer,构造verifier时要么不设置
-           issuer的值,要么一定要和待验证的相匹配才行!!!
+           如果待验证的token中设置了issuer,audience,subject,构造verifier时要么不设置
+           issuer,audience,subject的值,要么一定要和待验证的相匹配才行!!!
          */
-        JWTVerifier verifier = JWT.require(algorithm).withIssuer("service").build(); // Reusable verifier instance
+        JWTVerifier verifier = JWT.require(algorithm).withIssuer("service").withAudience("APP").withSubject("this is test token").build(); // Reusable verifier instance
         DecodedJWT jwt = verifier.verify(token);
 
         /*
@@ -145,12 +151,19 @@ public class JwtDemo {
         System.out.println("subject:"+subject);
         List<String> audience = jwt.getAudience();
         System.out.println("audience:"+audience.get(0));
+
         Map<String, Claim> claims = jwt.getClaims();
         for (Entry<String, Claim> entry : claims.entrySet()) {
             String key = entry.getKey();
             Claim claim = entry.getValue();
             System.out.println("key:" + key + " value:" + claim.asString());
         }
+
+       /*
+            解析完token后读取数据
+            String loginName = jwt.getClaims().get("loginName").asString();
+            System.out.println(loginName);
+        */
 
         byte[] userByte = BaseEncoding.base64().decode(claims.get("user").asString());
         User user = new Gson().fromJson(new String(userByte), User.class);
@@ -177,7 +190,8 @@ public class JwtDemo {
 
         Algorithm algorithm = Algorithm.HMAC256("secret");
         String token = JWT.create().withHeader(map)
-                .withClaim("loginName", "zhuoqianmingyue").withClaim("user", userJsonBase64)
+                .withClaim("loginName", "zhuoqianmingyue")
+                .withClaim("user", userJsonBase64)
                 .withIssuer("service")// 签名是有谁生成
                 .withSubject("this is test token")// 签名的主题
                 // .withNotBefore(new Date())//该jwt都是不可用的时间
