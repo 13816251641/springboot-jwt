@@ -43,6 +43,7 @@ public class MyJwtTest {
                 .withIssuer("server")//设置签名是由谁生成
                 .withClaim("userName", "lujieni520")
                 .withClaim("deptName", "it")
+                .withClaim("age", "芳龄18")
                 /* 签名 Signature */
                 .sign(algorithm);
     }
@@ -51,8 +52,8 @@ public class MyJwtTest {
      * 直接获取token中的值,发现如下:
      * 1.audience&issuer&subject可直接获取
      * 2.claims里的值需要使用asString获取
-     * 3.综上token里面存储的值默认不加密,都可以被第三方
-     * 直接读取到里面的值,签名指的是怕被第三方篡改而已!!!
+     * 3.综上token里面存储的值默认是不加密的,因此可以被第三方
+     * 直接读取到里面的值,签名指的是验证是否被第三方篡改过!!!
      */
     @Test
     public void testGetValueDirectly(){
