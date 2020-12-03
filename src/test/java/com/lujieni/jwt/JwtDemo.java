@@ -1,6 +1,7 @@
 package com.lujieni.jwt;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -152,6 +153,15 @@ public class JwtDemo {
         List<String> audience = jwt.getAudience();
         System.out.println("audience:"+audience.get(0));
 
+        /*
+            key:sub value:this is test token
+            key:aud value:APP
+            key:loginName value:zhuoqianmingyue
+            key:iss value:service
+            key:exp value:null
+            key:user value:eyJ1c2VybmFtZSI6IuW8oOS4iSIsInBhc3N3b3JkIjoiMTIzIn0=
+            key:iat value:null
+         */
         Map<String, Claim> claims = jwt.getClaims();
         for (Entry<String, Claim> entry : claims.entrySet()) {
             String key = entry.getKey();
@@ -160,12 +170,12 @@ public class JwtDemo {
         }
 
        /*
-            解析完token后读取数据
+            解析完token后直接读取数据,前提是你知道key名是啥
             String loginName = jwt.getClaims().get("loginName").asString();
             System.out.println(loginName);
         */
 
-        byte[] userByte = BaseEncoding.base64().decode(claims.get("user").asString());
+        byte[] userByte = BaseEncoding.base64().decode(claims.get("user").asString());//Base64编码格式的字符串->2进制数组
         User user = new Gson().fromJson(new String(userByte), User.class);
         System.out.println(user);
     }
@@ -183,10 +193,9 @@ public class JwtDemo {
         user.setUsername("张三");
         user.setPassword("123");
         Gson gson = new Gson();
-        String userJson = gson.toJson(user);
-        // String encode = URLEncoder.encode(userJson, "UTF-8");
+        String userJson = gson.toJson(user);//对象->json格式的String
 
-        String userJsonBase64 = BaseEncoding.base64().encode(userJson.getBytes());
+        String userJsonBase64 = BaseEncoding.base64().encode(userJson.getBytes());//2进制数组->Base64编码格式的字符串
 
         Algorithm algorithm = Algorithm.HMAC256("secret");
         String token = JWT.create().withHeader(map)
