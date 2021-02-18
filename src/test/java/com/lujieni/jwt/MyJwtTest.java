@@ -58,7 +58,7 @@ public class MyJwtTest {
     @Test
     public void testGetValueDirectly(){
         /*
-            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IHRva2VuIiwiYXVkIjoiYXBwIiwiZGVwdE5hbWUiOiJpdCIsImlzcyI6InNlcnZlciIsInVzZXJOYW1lIjoibHVqaWVuaSJ9.J0eg6NqOuzcEUOBl-VgffHO3yh4dEhe9ZW65omOev54
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IHRva2VuIiwiYXVkIjoiYXBwIiwiZGVwdE5hbWUiOiJpdCIsImlzcyI6InNlcnZlciIsInVzZXJOYW1lIjoibHVqaWVuaTUyMCIsImFnZSI6IuiKs-m-hDE4In0.bEGCq5LnjIDRk8stzt_xsnL7q4q_3UuzoOtfJ5lAHrI
          */
         System.out.println(token);
         String audience = JWT.decode(token).getAudience().get(0);
@@ -81,7 +81,7 @@ public class MyJwtTest {
      */
     @Test
     public void verifyToken() {
-        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IHRva2VuIiwiYXVkIjoiYXBwIiwiZGVwdE5hbWUiOiJpdCIsImlzcyI6InNlcnZlciIsInVzZXJOYW1lIjoibHVqaWVuaTUyMCJ9.J0eg6NqOuzcEUOBl-VgffHO3yh4dEhe9ZW65omOev54";
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IHRva2VuIiwiYXVkIjoiYXBwIiwiZGVwdE5hbWUiOiJpdCIsImlzcyI6InNlcnZlciIsInVzZXJOYW1lIjoibHVqaWVuaTUyMCIsImFnZSI6IuiKs-m-hDE4In0.bEGCq5LnjIDRk8stzt_xsnL7q4q_3UuzoOtfJ5lAHrI";
         Algorithm algorithm = Algorithm.HMAC256("secret");
         /* reusable verifier instance */
         JWTVerifier verifier = JWT.require(algorithm).build();
